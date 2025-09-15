@@ -1,7 +1,9 @@
-import json, random, time, os, redis
+import json, random, time, os, redis, string
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_socketio import SocketIO
+from typing import cast
 
 app = Flask(__name__)
 
@@ -14,7 +16,9 @@ app.config.update(
     SESSION_COOKIE_SAMESITE='Lax'
 )
 
-redis = redis.Redis(host="redis", port=6379, db=0, decode_responses=True)
+r = redis.Redis(host="redis", port=6379, db=0, decode_responses=True)
+
+socketio = SocketIO(app, message_queue="redis://redis:6379/0")
 
 limiter = Limiter(
     key_func=get_remote_address,
@@ -28,6 +32,17 @@ limiter.init_app(app)
 
 with open("flags.json", "r", encoding="utf-8") as f:
     FLAGS = json.load(f)
+
+def random_room_id(length=6):
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+
+def save_room(room_id, data):
+    r.set(f"room:{room_id}", json.dumps(data), ex=600)
+
+def load_room(room_id: str):
+    raw = r.get(f"room:{room_id}")
+    raw_str = cast(str | None, raw)
+    return json.loads(raw_str) if raw_str else None
 
 def get_new_quiz_state(message=None):
     flag_id = random.choice(list(FLAGS.keys()))
