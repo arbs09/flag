@@ -92,7 +92,7 @@
                 </button>
             {% endfor %}
         </div>
-        <button class="quiz-btn" id="reset-btn" style="background:#e53e3e;"><a href="{{ url_for('reset') }}">Reset</a></button>
+        <button class="quiz-btn" id="reset-btn" style="background:#e53e3e;"><a style="text-decoration: none; color: #fff;" href="{{ url_for('reset') }}">Reset</a></button>
     </div>
     <script>
         if (!localStorage.getItem('flags_preloaded')) {
