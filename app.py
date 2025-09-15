@@ -50,7 +50,7 @@ def index():
 def preload():
     return render_template("preload.html", FLAGS=FLAGS)
 
-@limiter.limit("5 per second")
+@limiter.limit("10 per second")
 @app.route("/quiz_api", methods=["POST"])
 def quiz_api():
     if "score" not in session:
@@ -95,6 +95,12 @@ def quiz():
         FLAGS=FLAGS,
         message=state["message"]
     )
+
+@limiter.limit("5 per second")
+@app.route("/reset", methods=["POST"])
+def reset():
+    session['score'] = 0
+    return jsonify({"status": "success", "message": "Score reset to 0"})
 
 if __name__ == "__main__":
     app.run(debug=True)
