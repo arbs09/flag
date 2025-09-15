@@ -3,3 +3,4 @@ gunicorn
 Flask-Limiter
 redis
 Flask-SocketIO
+Flask-Minify
