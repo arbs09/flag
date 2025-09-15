@@ -92,7 +92,7 @@
                 </button>
             {% endfor %}
         </div>
-        <button class="quiz-btn" id="reset-btn" style="background:#e53e3e;">Reset</button>
+        <button class="quiz-btn" id="reset-btn" style="background:#e53e3e;"><a href="{{ url_for('reset') }}">Reset</a></button>
     </div>
     <script>
         if (!localStorage.getItem('flags_preloaded')) {
@@ -159,18 +159,6 @@
                 submitQuiz(this.value);
             }
         });
-
-        document.getElementById('reset-btn').onclick = function(e) {
-            e.preventDefault();
-            clearInterval(timerInterval);
-            fetch("{{ url_for('reset') }}", { method: "POST" })
-                .then(response => response.json())
-                .then(data => {
-                    renderQuiz(data);
-                    startCountdown();
-                });
-            window.location.reload();
-        };
 
         window.onload = function() {
             startCountdown();

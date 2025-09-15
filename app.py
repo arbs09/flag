@@ -100,7 +100,7 @@ def quiz():
 @app.route("/reset", methods=["POST"])
 def reset():
     session['score'] = 0
-    return jsonify({"status": "success", "message": "Score reset to 0"})
+    return redirect(url_for("quiz"))
 
 if __name__ == "__main__":
     app.run(debug=True)
