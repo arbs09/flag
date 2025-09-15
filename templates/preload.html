@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+    <title>Flaggen werden geladen...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .preload-flag { display: none; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f6f8fa; text-align: center; }
+        .center { margin-top: 20vh; font-size: 1.4rem; color: #3182ce; }
+    </style>
+</head>
+<body>
+    <div class="center">
+        Flaggen werden vorgeladen...
+    </div>
+    {% for code in FLAGS.keys() %}
+        <img class="preload-flag" src="{{ url_for('static', filename='flags/' ~ code|lower ~ '.svg') }}" alt="">
+    {% endfor %}
+    <script>
+        let imgs = document.querySelectorAll('.preload-flag');
+        let loaded = 0;
+        imgs.forEach(img => {
+            img.onload = img.onerror = function() {
+                loaded++;
+                if (loaded === imgs.length) {
+                    localStorage.setItem('flags_preloaded', '1');
+                    window.location.href = "{{ url_for('quiz') }}";
+                }
+            };
+        });
+        setTimeout(function() {
+            localStorage.setItem('flags_preloaded', '1');
+            window.location.href = "{{ url_for('quiz') }}";
+        }, 2000);
+    </script>
+</body>
+</html>
