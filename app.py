@@ -1,10 +1,7 @@
-import json
-import random
-import time
+import json, random, time, os, redis
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-import os
 
 app = Flask(__name__)
 
@@ -17,10 +14,16 @@ app.config.update(
     SESSION_COOKIE_SAMESITE='Lax'
 )
 
+redis = redis.Redis(host="redis", port=6379, db=0, decode_responses=True)
 
 limiter = Limiter(
-    key_func=get_remote_address
+    key_func=get_remote_address,
+    app=app,
+    storage_uri="redis://redis:6379",
+    storage_options={"socket_connect_timeout": 30},
+    strategy="moving-window",
 )
+
 limiter.init_app(app)
 
 with open("flags.json", "r", encoding="utf-8") as f:
