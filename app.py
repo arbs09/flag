@@ -97,7 +97,7 @@ def quiz():
     )
 
 @limiter.limit("5 per second")
-@app.route("/reset", methods=["POST"])
+@app.route("/reset")
 def reset():
     session['score'] = 0
     return redirect(url_for("quiz"))
