@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, session, redirect, url_for, j
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_socketio import SocketIO
+from flask_minify import minify, decorators
 from typing import cast
 
 app = Flask(__name__)
@@ -17,6 +18,8 @@ app.config.update(
 )
 
 r = redis.Redis(host="redis", port=6379, db=0, decode_responses=True)
+
+minify(app=app, passive=True)
 
 socketio = SocketIO(app, message_queue="redis://redis:6379/0")
 
@@ -65,6 +68,7 @@ def index():
     return redirect(url_for("quiz"))
 
 @app.route("/preload")
+@decorators.minify(html=True, js=True, cssless=True)
 def preload():
     return render_template("preload.html", FLAGS=FLAGS)
 
@@ -101,6 +105,7 @@ def quiz_api():
     })
 
 @app.route("/quiz", methods=["GET"])
+@decorators.minify(html=True, js=True, cssless=True)
 def quiz():
     if "score" not in session:
         session["score"] = 0
