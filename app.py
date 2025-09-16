@@ -73,8 +73,8 @@ def preload():
     return render_template("preload.html", FLAGS=FLAGS)
 
 @limiter.limit("10 per second")
-@app.route("/quiz_api", methods=["POST"])
-def quiz_api():
+@app.route("/solo_quiz_api", methods=["POST"])
+def solo_quiz_api():
     if "score" not in session:
         session["score"] = 0
 
@@ -109,15 +109,7 @@ def quiz_api():
 def quiz():
     if "score" not in session:
         session["score"] = 0
-    state = get_new_quiz_state()
-    return render_template(
-        "quiz.html",
-        flag_file=state["flag_file"],
-        options=state["options"],
-        score=state["score"],
-        FLAGS=FLAGS,
-        message=state["message"]
-    )
+    return render_template("quiz.html")
 
 @limiter.limit("5 per second")
 @app.route("/reset")

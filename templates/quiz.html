@@ -1,168 +1,173 @@
 <!doctype html>
 <html lang="de">
-<head>
+  <head>
     <title>Flaggen Quiz</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
-        body {
-            background: #f6f8fa;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-        }
+      body {
+        background: #f6f8fa;
+        font-family: "Segoe UI", Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 400px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        padding: 32px 24px 24px 24px;
+        text-align: center;
+      }
+      h2 {
+        margin-top: 0;
+        color: #2d3748;
+        font-size: 2rem;
+      }
+      #timer {
+        font-size: 1.2rem;
+        color: #3182ce;
+        margin-bottom: 18px;
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+      img {
+        margin: 18px 0 24px 0;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        background: #f9fafb;
+        box-shadow: 0 2px 8px rgba(49, 130, 206, 0.07);
+      }
+      .quiz-btn {
+        width: 100%;
+        margin: 8px 0;
+        padding: 14px 0;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 8px;
+        background: #3182ce;
+        color: #fff;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s, transform 0.08s;
+        box-shadow: 0 2px 8px rgba(49, 130, 206, 0.07);
+      }
+      .quiz-btn:hover,
+      .quiz-btn:focus {
+        background: #2563eb;
+        transform: translateY(-2px) scale(1.03);
+      }
+      .message {
+        margin: 12px 0 0 0;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #38a169;
+      }
+      @media (max-width: 500px) {
         .container {
-            max-width: 400px;
-            margin: 40px auto;
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-            padding: 32px 24px 24px 24px;
-            text-align: center;
-        }
-        h2 {
-            margin-top: 0;
-            color: #2d3748;
-            font-size: 2rem;
-        }
-        #timer {
-            font-size: 1.2rem;
-            color: #3182ce;
-            margin-bottom: 18px;
-            font-weight: 600;
-            letter-spacing: 1px;
+          padding: 16px 4vw 18px 4vw;
         }
         img {
-            margin: 18px 0 24px 0;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            background: #f9fafb;
-            box-shadow: 0 2px 8px rgba(49,130,206,0.07);
+          width: 90vw;
+          max-width: 260px;
         }
-        .quiz-btn {
-            width: 100%;
-            margin: 8px 0;
-            padding: 14px 0;
-            font-size: 1.1rem;
-            border: none;
-            border-radius: 8px;
-            background: #3182ce;
-            color: #fff;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.15s, transform 0.08s;
-            box-shadow: 0 2px 8px rgba(49,130,206,0.07);
-        }
-        .quiz-btn:hover, .quiz-btn:focus {
-            background: #2563eb;
-            transform: translateY(-2px) scale(1.03);
-        }
-        .message {
-            margin: 12px 0 0 0;
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: #38a169;
-        }
-        @media (max-width: 500px) {
-            .container {
-                padding: 16px 4vw 18px 4vw;
-            }
-            img {
-                width: 90vw;
-                max-width: 260px;
-            }
-        }
+      }
     </style>
-    <script defer src="https://analytics.getroot.eu/script.js" data-website-id="5408385e-42df-45db-8b70-9bd61b364efa" data-do-not-track="true"></script>
-</head>
-<body>
+    <script
+      defer
+      src="https://analytics.getroot.eu/script.js"
+      data-website-id="5408385e-42df-45db-8b70-9bd61b364efa"
+      data-do-not-track="true"
+    ></script>
+  </head>
+  <body>
     <div class="container">
-        <h2 id="score">Score: {{ score }}</h2>
-        {% if message %}
-            <div class="message" id="message">{{ message }}</div>
-        {% else %}
-            <div class="message" id="message"></div>
-        {% endif %}
-        <div id="timer"></div>
-        <img id="flag-img" src="{{ url_for('static', filename='flags/' ~ flag_file) }}" width="200" alt="Flagge"><br>
-        <div id="options">
-            {% for opt in options %}
-                <button class="quiz-btn" name="choice" value="{{ opt }}">
-                    {{ FLAGS[opt] }}
-                </button>
-            {% endfor %}
-        </div>
-        <button class="quiz-btn" id="reset-btn" style="background:#e53e3e;"><a style="text-decoration: none; color: #fff;" href="{{ url_for('reset') }}">Reset</a></button>
+      <h2 id="score">Score: 0</h2>
+      <div class="message" id="message"></div>
+      <div id="timer"></div>
+      <img id="flag-img" src="" width="200" alt="Flagge" /><br />
+      <div id="options"></div>
+      <button class="quiz-btn" id="reset-btn" style="background: #e53e3e">
+        Reset
+      </button>
     </div>
+
     <script>
-        if (!localStorage.getItem('flags_preloaded')) {
-            window.location.href = "{{ url_for('preload') }}";
+      (function ensurePreload() {
+        if (!localStorage.getItem("flags_preloaded")) {
+          window.location.href = "/preload";
         }
+      })();
 
-        let seconds = 5;
-        let timerInterval = null;
+      let seconds = 5;
+      let timerInterval = null;
 
-        function startCountdown() {
-            seconds = 5;
-            document.getElementById('timer').innerText = seconds + " Sekunden";
-            timerInterval = setInterval(() => {
-                seconds--;
-                if (seconds > 0) {
-                    document.getElementById('timer').innerText = seconds + " Sekunden";
-                } else {
-                    clearInterval(timerInterval);
-                    submitQuiz();
-                }
-            }, 1000);
-        }
-
-        function renderQuiz(data) {
-            document.getElementById('score').innerText = "Score: " + data.score;
-            document.getElementById('flag-img').src = "/static/flags/" + data.flag_file;
-            document.getElementById('message').innerText = data.message ? data.message : "";
-            // Optionen neu rendern
-            let optionsDiv = document.getElementById('options');
-            optionsDiv.innerHTML = "";
-            for (let i = 0; i < data.options.length; i++) {
-                let btn = document.createElement("button");
-                btn.className = "quiz-btn";
-                btn.name = "choice";
-                btn.value = data.options[i];
-                btn.innerText = data.option_names[i];
-                btn.onclick = function(e) {
-                    e.preventDefault();
-                    submitQuiz(this.value);
-                };
-                optionsDiv.appendChild(btn);
-            }
-        }
-
-        function submitQuiz(choice = null) {
+      function startCountdown() {
+        seconds = 5;
+        const timerEl = document.getElementById("timer");
+        timerEl.innerText = seconds + " Sekunden";
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+          seconds--;
+          if (seconds > 0) {
+            timerEl.innerText = seconds + " Sekunden";
+          } else {
             clearInterval(timerInterval);
-            const formData = new FormData();
-            if (choice) formData.append('choice', choice);
+            submitQuiz();
+          }
+        }, 1000);
+      }
 
-            fetch("{{ url_for('quiz_api') }}", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                renderQuiz(data);
-                startCountdown();
-            });
+      function renderQuiz(data) {
+        document.getElementById("score").innerText = "Score: " + data.score;
+        document.getElementById("flag-img").src =
+          "/static/flags/" + data.flag_file;
+        document.getElementById("message").innerText = data.message || "";
+
+        const optionsDiv = document.getElementById("options");
+        optionsDiv.innerHTML = "";
+
+        for (let i = 0; i < data.options.length; i++) {
+          const btn = document.createElement("button");
+          btn.className = "quiz-btn";
+          btn.name = "choice";
+          btn.value = data.options[i];
+          btn.innerText = data.option_names[i];
+          btn.onclick = function (e) {
+            e.preventDefault();
+            submitQuiz(this.value);
+          };
+          optionsDiv.appendChild(btn);
         }
+      }
 
-        document.querySelectorAll('button[name="choice"]').forEach(btn => {
-            btn.onclick = function(e) {
-                e.preventDefault();
-                submitQuiz(this.value);
-            }
-        });
+      function submitQuiz(choice = null) {
+        clearInterval(timerInterval);
+        const formData = new FormData();
+        if (choice) formData.append("choice", choice);
 
-        window.onload = function() {
+        fetch("/solo_quiz_api", {
+          method: "POST",
+          body: formData,
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            renderQuiz(data);
             startCountdown();
-        }
+          })
+          .catch((e) => {
+            console.error(e);
+          });
+      }
+
+      window.onload = function () {
+        submitQuiz();
+      };
+
+      document.getElementById("reset-btn").onclick = function () {
+        window.location.href = "/reset";
+      };
     </script>
-</body>
+  </body>
 </html>
