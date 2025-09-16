@@ -158,13 +158,12 @@
             console.error(e);
             });
         }
+        document.getElementById("reset-btn").onclick = function () {
+          window.location.href = "/reset";
+        };
 
         window.onload = function () {
         submitQuiz();
-        };
-
-        document.getElementById("reset-btn").onclick = function () {
-        window.location.href = "/reset";
         };
     </script>
     <script>
