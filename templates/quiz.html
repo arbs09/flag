@@ -88,86 +88,98 @@
       <div id="timer"></div>
       <img id="flag-img" src="" width="200" alt="Flagge" /><br />
       <div id="options"></div>
-      <button class="quiz-btn" id="reset-btn" style="background: #e53e3e">
-        Reset
-      </button>
+      <button class="quiz-btn" id="reset-btn" style="background: #e53e3e">Reset</button>
+      <button class="quiz-btn" id="mp-btn" style="background:#6b46c1;">Multiplayer</button>
     </div>
 
     <script>
-      (function ensurePreload() {
+        (function ensurePreload() {
         if (!localStorage.getItem("flags_preloaded")) {
-          window.location.href = "/preload";
+            window.location.href = "/preload";
         }
-      })();
+        })();
 
-      let seconds = 5;
-      let timerInterval = null;
+        let seconds = 5;
+        let timerInterval = null;
 
-      function startCountdown() {
+        function startCountdown() {
         seconds = 5;
         const timerEl = document.getElementById("timer");
         timerEl.innerText = seconds + " Sekunden";
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
-          seconds--;
-          if (seconds > 0) {
+            seconds--;
+            if (seconds > 0) {
             timerEl.innerText = seconds + " Sekunden";
-          } else {
+            } else {
             clearInterval(timerInterval);
             submitQuiz();
-          }
+            }
         }, 1000);
-      }
+        }
 
-      function renderQuiz(data) {
+        function renderQuiz(data) {
         document.getElementById("score").innerText = "Score: " + data.score;
         document.getElementById("flag-img").src =
-          "/static/flags/" + data.flag_file;
+            "/static/flags/" + data.flag_file;
         document.getElementById("message").innerText = data.message || "";
 
         const optionsDiv = document.getElementById("options");
         optionsDiv.innerHTML = "";
 
         for (let i = 0; i < data.options.length; i++) {
-          const btn = document.createElement("button");
-          btn.className = "quiz-btn";
-          btn.name = "choice";
-          btn.value = data.options[i];
-          btn.innerText = data.option_names[i];
-          btn.onclick = function (e) {
+            const btn = document.createElement("button");
+            btn.className = "quiz-btn";
+            btn.name = "choice";
+            btn.value = data.options[i];
+            btn.innerText = data.option_names[i];
+            btn.onclick = function (e) {
             e.preventDefault();
             submitQuiz(this.value);
-          };
-          optionsDiv.appendChild(btn);
+            };
+            optionsDiv.appendChild(btn);
         }
-      }
+        }
 
-      function submitQuiz(choice = null) {
+        function submitQuiz(choice = null) {
         clearInterval(timerInterval);
         const formData = new FormData();
         if (choice) formData.append("choice", choice);
 
         fetch("/solo_quiz_api", {
-          method: "POST",
-          body: formData,
+            method: "POST",
+            body: formData,
         })
-          .then((r) => r.json())
-          .then((data) => {
+            .then((r) => r.json())
+            .then((data) => {
             renderQuiz(data);
             startCountdown();
-          })
-          .catch((e) => {
+            })
+            .catch((e) => {
             console.error(e);
-          });
-      }
+            });
+        }
 
-      window.onload = function () {
+        window.onload = function () {
         submitQuiz();
-      };
+        };
 
-      document.getElementById("reset-btn").onclick = function () {
+        document.getElementById("reset-btn").onclick = function () {
         window.location.href = "/reset";
-      };
+        };
+    </script>
+    <script>
+        document.getElementById("mp-btn").onclick = async function () {
+            try {
+            const res = await fetch("/create_room", { method: "POST" });
+            const data = await res.json();
+            if (data.room_id) {
+                window.location.href = "/room/" + data.room_id;
+            }
+            } catch (e) {
+            console.error(e);
+            }
+        };
     </script>
   </body>
 </html>

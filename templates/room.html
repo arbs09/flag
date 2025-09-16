@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <title>Flaggen Quiz – Raum</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body { background: #f6f8fa; font-family: "Segoe UI", Arial, sans-serif; margin: 0; }
+      .container { max-width: 480px; margin: 40px auto; background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(0,0,0,.08); padding: 24px; text-align: center; }
+      h2 { margin: 0; color: #2d3748; font-size: 1.6rem; }
+      #timer { font-size: 1.1rem; color: #3182ce; margin: 10px 0; font-weight: 600; }
+      img { margin: 16px 0 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: #f9fafb; box-shadow: 0 2px 8px rgba(49,130,206,0.07); }
+      .quiz-btn { width: 100%; margin: 6px 0; padding: 12px 0; font-size: 1rem; border: none; border-radius: 8px; background: #3182ce; color: #fff; cursor: pointer; transition: background .15s, transform .08s; }
+      .quiz-btn:hover { background: #2563eb; transform: translateY(-1px); }
+      .message { margin: 8px 0; font-size: 1rem; color: #38a169; min-height: 1.2em; }
+      .scores { text-align: left; font-family: ui-monospace, Menlo, monospace; background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-top: 10px; }
+      .topbar { display:flex; justify-content: space-between; align-items:center; }
+      .link { font-size: .9rem; color: #4a5568; }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <h2>Multiplayer Raum: <span id="room_id"></span></h2>
+        <a class="link" href="/quiz">Solo</a>
+      </div>
+      <div id="timer"></div>
+      <div class="message" id="message"></div>
+      <img id="flag-img" src="" width="200" alt="Flagge" /><br />
+      <div id="options"></div>
+      <div class="scores" id="scores" style="display:none;"></div>
+      <div class="link">Link teilen: <span id="share"></span></div>
+    </div>
+
+    <script>
+      // Preload gate (optional)
+      if (!localStorage.getItem("flags_preloaded")) {
+        window.location.href = "/preload";
+      }
+
+      const roomId = "{{ room_id }}";
+      document.getElementById("room_id").innerText = roomId;
+      document.getElementById("share").innerText = window.location.href;
+
+      const socket = io({ transports: ["websocket", "polling"] });
+      let countdownTimer = null;
+      let timeLeft = 0;
+
+      function startCountdown(sec) {
+        clearInterval(countdownTimer);
+        timeLeft = sec;
+        const el = document.getElementById("timer");
+        el.innerText = timeLeft + " Sekunden";
+        countdownTimer = setInterval(() => {
+          timeLeft--;
+          if (timeLeft > 0) {
+            el.innerText = timeLeft + " Sekunden";
+          } else {
+            clearInterval(countdownTimer);
+            // No client action on timeout; server handles round end
+          }
+        }, 1000);
+      }
+
+      function renderOptions(options, optionNames) {
+        const optionsDiv = document.getElementById("options");
+        optionsDiv.innerHTML = "";
+        for (let i = 0; i < options.length; i++) {
+          const btn = document.createElement("button");
+          btn.className = "quiz-btn";
+          btn.innerText = optionNames[i];
+          btn.onclick = () => {
+            socket.emit("submit_answer", { room_id: roomId, choice: options[i] });
+            // Disable buttons after answering
+            Array.from(optionsDiv.children).forEach(b => b.disabled = true);
+            document.getElementById("message").innerText = "Antwort gesendet.";
+          };
+          optionsDiv.appendChild(btn);
+        }
+      }
+
+      socket.on("connect", () => {
+        socket.emit("join_room", { room_id: roomId });
+      });
+
+      socket.on("joined", (data) => {
+        // Optionally show own score; server will broadcast starts
+        document.getElementById("message").innerText = "Verbunden. Viel Erfolg!";
+      });
+
+      socket.on("round_start", (data) => {
+        document.getElementById("message").innerText = "";
+        document.getElementById("scores").style.display = "none";
+        document.getElementById("flag-img").src = "/static/flags/" + data.flag_file;
+        renderOptions(data.options, data.option_names);
+        startCountdown(data.time_limit || 5);
+      });
+
+      socket.on("answer_ack", (msg) => {
+        if (!msg.accepted) {
+          document.getElementById("message").innerText = "Antwort abgelehnt: " + (msg.reason || "");
+        }
+      });
+
+      socket.on("round_result", (data) => {
+        const { correct_flag_id, correct_flag_name, scores } = data;
+        document.getElementById("message").innerText = "Richtig war: " + correct_flag_name;
+        const optionsDiv = document.getElementById("options");
+        Array.from(optionsDiv.children).forEach(b => b.disabled = true);
+
+        // Render simple scoreboard
+        const s = document.getElementById("scores");
+        s.style.display = "block";
+        s.innerHTML = "Punktestand:\n" + Object.entries(scores)
+          .map(([sid, sc]) => sid + ": " + sc)
+          .join("\n");
+      });
+
+      socket.on("error", (e) => {
+        document.getElementById("message").innerText = e.message || "Fehler.";
+      });
+    </script>
+  </body>
+</html>
