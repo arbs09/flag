@@ -26,7 +26,13 @@ r = redis.Redis(host="redis", port=6379, db=0, decode_responses=True)
 
 minify(app=app, passive=True)
 
-socketio = SocketIO(app, message_queue="redis://redis:6379/0")
+socketio = SocketIO(
+    app,
+    cors_allowed_origins=[
+        "https://flaggen.arbs09.dev",
+    ],
+    message_queue="redis://redis:6379/0",
+)
 
 ROUND_DURATION_SEC = 5
 room_timers = {}
