@@ -2,6 +2,4 @@ flask
 gunicorn
 Flask-Limiter
 redis
-Flask-SocketIO
 Flask-Minify
-eventlet>=0.33.3
