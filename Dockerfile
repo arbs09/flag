@@ -13,4 +13,4 @@ COPY . /app/
 
 EXPOSE 5000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app", "--workers", "3"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:sio_app", "--workers", "3", "-k", "eventlet"]

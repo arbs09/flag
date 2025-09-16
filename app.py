@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, session, redirect, url_for, j
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_socketio import SocketIO, join_room, leave_room, emit
+from engineio import WSGIApp as EngineIOWSGIApp
 from flask_minify import minify, decorators
 from typing import cast
 from threading import Timer
@@ -292,3 +293,5 @@ def reset():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+sio_app = EngineIOWSGIApp(socketio, app)
