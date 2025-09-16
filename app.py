@@ -293,8 +293,3 @@ def on_submit_answer(data):
 def reset():
     session['score'] = 0
     return redirect(url_for("quiz"))
-
-if __name__ == "__main__":
-    app.run(debug=True)
-
-sio_app = EngineIOWSGIApp(socketio, app)
