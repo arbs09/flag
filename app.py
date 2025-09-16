@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 import json, random, time, os, redis, string
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 from flask_limiter import Limiter
