@@ -1,11 +1,7 @@
-import eventlet
-eventlet.monkey_patch()
-
 import json, random, time, os, redis, string
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from engineio import WSGIApp as EngineIOWSGIApp
 from flask_minify import minify, decorators
 from typing import cast
 from threading import Timer
@@ -24,17 +20,6 @@ app.config.update(
 r = redis.Redis(host="redis", port=6379, db=0, decode_responses=True)
 
 minify(app=app, passive=True)
-
-socketio = SocketIO(
-    app,
-    cors_allowed_origins=[
-        "https://flaggen.arbs09.dev",
-    ],
-    message_queue="redis://redis:6379/0",
-)
-
-ROUND_DURATION_SEC = 5
-room_timers = {}
 
 limiter = Limiter(
     key_func=get_remote_address,
