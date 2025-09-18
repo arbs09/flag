@@ -14,7 +14,7 @@ app.config.update(
     SEND_FILE_MAX_AGE_DEFAULT=60 * 60 * 24 * 30 * 6,
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SECURE=True,
-    SESSION_COOKIE_SAMESITE='Lax'
+    SESSION_COOKIE_SAMESITE="None",
 )
 
 r = redis.Redis(host="redis", port=6379, db=0, decode_responses=True)
