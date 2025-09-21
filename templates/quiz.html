@@ -88,7 +88,6 @@
       <img id="flag-img" src="" width="200" alt="Flagge" /><br />
       <div id="options"></div>
       <button class="quiz-btn" id="reset-btn" style="background: #e53e3e">Reset</button>
-      <button class="quiz-btn" id="mp-btn" style="background:#6b46c1;">Multiplayer (BETA)</button>
     </div>
 
     <script>
@@ -145,7 +144,7 @@
         const formData = new FormData();
         if (choice) formData.append("choice", choice);
 
-        fetch("/solo_quiz_api", {
+        fetch("/api/quiz_api", {
             method: "POST",
             body: formData,
         })
@@ -164,19 +163,6 @@
 
         window.onload = function () {
         submitQuiz();
-        };
-    </script>
-    <script>
-        document.getElementById("mp-btn").onclick = async function () {
-            try {
-            const res = await fetch("/create_room", { method: "POST" });
-            const data = await res.json();
-            if (data.room_id) {
-                window.location.href = "/room/" + data.room_id;
-            }
-            } catch (e) {
-            console.error(e);
-            }
         };
     </script>
   </body>
