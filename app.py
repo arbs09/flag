@@ -68,7 +68,7 @@ def preload():
     return render_template("preload.html", FLAGS=FLAGS)
 
 @limiter.limit("10 per second")
-@app.route("/api/quiz_api", methods=["POST"])
+@app.route("/api/quiz", methods=["POST"])
 def quiz_api():
     if "score" not in session:
         session["score"] = 0

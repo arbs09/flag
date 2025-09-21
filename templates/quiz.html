@@ -144,7 +144,7 @@
         const formData = new FormData();
         if (choice) formData.append("choice", choice);
 
-        fetch("/api/quiz_api", {
+        fetch("/api/quiz", {
             method: "POST",
             body: formData,
         })
